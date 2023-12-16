@@ -1,14 +1,23 @@
-let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 let scCoords = [37.503731, -122.264931];
 function createFeatures(earthquakeData){
     let quakeMarkers = [];
+
+    function radiusFinder(magnitude){
+        return magnitude ** 7
+    }
+
+    function colorFinder(depth){
+
+    }
+
     earthquakeData.forEach(quake=>{
         quakeMarkers.push(
             L.circle([quake.geometry.coordinates[1], quake.geometry.coordinates[0]], {
                 color: "red",
                 fillColor: "red",
                 fillOpacity: 0.5,
-                radius: 10000 
+                radius: radiusFinder(quake.properties.mag)
             })
         )
     })
