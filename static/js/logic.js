@@ -1,5 +1,29 @@
 let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 let scCoords = [37.503731, -122.264931];
+
+function colorFinder(depth){
+    let color = "#341bf5";
+    switch (true){
+        case(depth > 90):
+            color = "#f51b1b";
+            break;
+        case(depth >= 70):
+            color = "#f51b59";
+            break;
+        case(depth >= 50):
+            color = "#f51b88";
+            break;
+        case(depth >= 30):
+            color = "#f51bb7";
+            break;
+        case(depth > 10):
+            color = "#e31bf5";
+            break;
+    }
+    return color;
+}
+
+
 function createFeatures(earthquakeData){
     let quakeMarkers = [];
 
@@ -7,15 +31,13 @@ function createFeatures(earthquakeData){
         return magnitude ** 7
     }
 
-    function colorFinder(depth){
-
-    }
+    
 
     earthquakeData.forEach(quake=>{
         quakeMarkers.push(
             L.circle([quake.geometry.coordinates[1], quake.geometry.coordinates[0]], {
-                color: "red",
-                fillColor: "red",
+                color: colorFinder(quake.geometry.coordinates[2]),
+                fillColor: colorFinder(quake.geometry.coordinates[2]),
                 fillOpacity: 0.5,
                 radius: radiusFinder(quake.properties.mag)
             })
@@ -51,7 +73,28 @@ function createMap(quakes){
     L.control.layers(baseMaps, overlayMaps, {
         collapsed: true
     }).addTo(myMap);
-    
+    var legend = L.control({position: "bottomright"});
+    legend.onAdd = function() {
+        var div = L.DomUtil.create("div", "info legend"),
+        depthRanges = [-10, 10, 30, 50, 70, 90];
+
+        // Add a white background box
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        div.style.borderRadius = '5px';
+
+        div.innerHTML += "<h3 style='text-align: center'>Depth</h3>"
+
+        for (var i = 0; i < depthRanges.length; i++) {
+            div.innerHTML += '<i style="background:' + colorFinder(depthRanges[i] + 1) + '; width: 20px; height: 20px; display: inline-block;"></i> ' + depthRanges[i] + (depthRanges[i + 1] ? '&ndash;' + depthRanges[i + 1] + '<br>' : '+');
+        }
+        return div;
+    };
+    legend.addTo(myMap);
+
+
+
+
 }
 
 d3.json(url).then(function (data) {
