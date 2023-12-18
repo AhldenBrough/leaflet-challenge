@@ -44,7 +44,7 @@ function createFeatures(earthquakeData){
                 //determine radius using radius finder
                 radius: radiusFinder(quake.properties.mag)
             //add a popup with the title and date
-            }).bindPopup(`<h3>${quake.properties.title}</h3><hr><p>${new Date(quake.properties.time)}</p>`)
+            }).bindPopup(`<h3>${quake.properties.title}</h3><hr><p>Time: ${new Date(quake.properties.time)}, Depth: ${quake.geometry.coordinates[2]}</p>`)
         )
     })
     //create layer group with all of the quake markers
